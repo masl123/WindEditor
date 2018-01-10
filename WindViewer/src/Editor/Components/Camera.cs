@@ -4,10 +4,12 @@ using OpenTK;
 
 namespace WindViewer.Editor.Renderer
 {
+
+    //TODO Add Camera Options to Option Window
     public class Camera : BaseComponent
     {
         /// <summary> The near clipping plane distance. </summary>
-        public float NearClipPlane = 250f;
+        public float NearClipPlane = 20;
         /// <summary> The far clipping plane distance. </summary>
         public float FarClipPlane = 45000f;
         /// <summary> Vertical field of view in degrees. </summary>
