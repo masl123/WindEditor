@@ -493,7 +493,8 @@ namespace WindViewer.FileFormats
                     {
                         for (int dx = 0; dx < 2; ++dx, dataOffset += 8)
                         {
-                            if (4 * (x + dx) < width && 4 * (y + dy) < height)
+                            //TODO FIXME: Out of bounds error (there is a Workaround for this as of now)
+                            if (4 * (x + dx) < width && 4 * (y + dy) < height && fileData.Length > dataOffset)
                                 Buffer.BlockCopy(fileData, (int)dataOffset, buffer, (int)(8 * ((y + dy) * width / 4 + x + dx)), 8);
                         }
                     }
