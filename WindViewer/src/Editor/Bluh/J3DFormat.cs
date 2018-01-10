@@ -288,6 +288,8 @@ namespace WindViewer.FileFormats
             private uint _tex6DataOffset; //Presumed
             private uint _tex7DataOffset; //Presumed
 
+            private Dictionary<ArrayTypes, VertexFormat> vertexFormats;
+
             public override void Load(byte[] data, ref int offset)
             {
                 base.Load(data, ref offset);
@@ -308,27 +310,25 @@ namespace WindViewer.FileFormats
                 _tex7DataOffset = (uint)FSHelpers.Read32(data, offset + 0x3C);
 
                 offset += ChunkSize;
+
+                vertexFormats = GetAllVertexFormats();
             }
 
-            //TODO rewrite; put this in a map with Types as Keys
-            public VertexFormat GetVertexFormat(uint index)
+            public Dictionary<ArrayTypes, VertexFormat> GetAllVertexFormats()
             {
-                VertexFormat vtxFmt = new VertexFormat();
-                vtxFmt.Load(_dataCopy, _vertexFormatsOffset + (index * VertexFormat.Size));
-                return vtxFmt;
-            }
-
-            //TODO rewrite; put this in a map with Types as Keys
-            public List<VertexFormat> GetAllVertexFormats()
-            {
-                var allFormats = new List<VertexFormat>();
+                var allFormats = new Dictionary<ArrayTypes, VertexFormat>();
                 VertexFormat vFormat;
                 uint dataOffset = _vertexFormatsOffset;
                 do
                 {
                     vFormat = new VertexFormat();
                     vFormat.Load(_dataCopy, dataOffset);
-                    allFormats.Add(vFormat);
+                    
+
+                    if (allFormats.ContainsKey(vFormat.ArrayType)){
+                        Console.WriteLine("Vertex Format for {0} already exists for Vertex Chunk", vFormat.ArrayType.ToString());
+                    }
+                    allFormats.Add(vFormat.ArrayType, vFormat);
 
                     dataOffset += VertexFormat.Size;
                 } while (vFormat.ArrayType != ArrayTypes.NullAttr);
@@ -339,7 +339,12 @@ namespace WindViewer.FileFormats
             public Vector3 GetPosition(uint index)
             {
                 Vector3 newPos = new Vector3();
-                VertexFormat vf = GetVertexFormat(0);
+
+                VertexFormat vf;
+                var hasvf = vertexFormats.TryGetValue(ArrayTypes.Position, out vf);
+                if (!hasvf) {
+                    throw new Exception("Error getting Vertex Format for Position");
+                }
 
                 if (vf.DataType == DataTypes.Float32)
                 {
@@ -361,7 +366,12 @@ namespace WindViewer.FileFormats
 
             public Vector3 GetNormal(uint index, int decimalPlace)
             {
-                VertexFormat vf = GetVertexFormat(1);
+                VertexFormat vf;
+                var hasvf = vertexFormats.TryGetValue(ArrayTypes.Normal, out vf);
+                if (!hasvf)
+                {
+                    throw new Exception("Error getting Vertex Format for Normal");
+                }
 
                 Vector3 newNormal = new Vector3();
                 float scaleFactor = (float)Math.Pow(0.5, vf.DecimalPoint);
@@ -384,14 +394,38 @@ namespace WindViewer.FileFormats
 
             public Vector2 GetTex0(int index)
             {
-                
 
+                VertexFormat vf;
+                var hasvf = vertexFormats.TryGetValue(ArrayTypes.Tex0, out vf);
+                if (!hasvf)
+                {
+                    throw new Exception("Error getting Vertex Format for Tex0");
+                }
 
                 Vector2 newTexCoord = new Vector2();
-                float scaleFactor = (float)Math.Pow(0.5, GetVertexFormat(3).DecimalPoint);
+                float scaleFactor = (float)Math.Pow(0.5, vf.DecimalPoint);
 
                 for (int i = 0; i < 2; i++)
                     newTexCoord[i] = FSHelpers.Read16(_dataCopy, (int)_tex0DataOffset + (index * 4) + (i * 0x2)) * scaleFactor;
+
+                return newTexCoord;
+            }
+
+            public Vector2 GetTex1(int index)
+            {
+
+                VertexFormat vf;
+                var hasvf = vertexFormats.TryGetValue(ArrayTypes.Tex1, out vf);
+                if (!hasvf)
+                {
+                    throw new Exception("Error getting Vertex Format for Tex0");
+                }
+
+                Vector2 newTexCoord = new Vector2();
+                float scaleFactor = (float)Math.Pow(0.5, vf.DecimalPoint);
+
+                for (int i = 0; i < 2; i++)
+                    newTexCoord[i] = FSHelpers.Read16(_dataCopy, (int)_tex1DataOffset + (index * 4) + (i * 0x2)) * scaleFactor;
 
                 return newTexCoord;
             }

@@ -619,11 +619,12 @@ namespace WindViewer.Editor.WindWaker
                                     case J3DFormat.ArrayTypes.Color0:
                                         newVertex.Color = _file.Vertexes.GetColor0(curIndex);
                                         break;
+
                                     case J3DFormat.ArrayTypes.Tex0:
                                         newVertex.TexCoord = _file.Vertexes.GetTex0(curIndex);
                                         break;
-                                    case J3DFormat.ArrayTypes.Tex1:
-                                        Console.WriteLine("Tex1 Found!");
+                                    case J3DFormat.ArrayTypes.Tex1: 
+                                        //TODO Implement multitexture Support
                                         break;
                                     case J3DFormat.ArrayTypes.PositionMatrixIndex:
                                         //Console.WriteLine("B: {0} P: {1} Prim: {2} Vert{3} Index: {4}", i, p, renderPacket.PrimList.Count, vert, curIndex);

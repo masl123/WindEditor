@@ -11,6 +11,7 @@ using WindViewer.FileFormats;
 using WindViewer.Forms.Dialogs;
 using WindViewer.Forms.EntityEditors;
 using WindViewer.src.Forms;
+using WindViewer.Editor.Renderer;
 
 namespace WindViewer.Forms
 {
@@ -634,7 +635,7 @@ namespace WindViewer.Forms
             _loadedWorldspaceProject = null;
             _selectedEntityFile = null;
             _selectedEntityLayer = EditorHelpers.EntityLayer.DefaultLayer;
-            //_renderer.OnSceneUnload();
+            J3DRenderer.Instance.OnSceneUnload(); //delete all rendered Objects
             UpdateProjectFolderTreeview();
             UpdateEntityTreeview();
             UpdateLayersView();
