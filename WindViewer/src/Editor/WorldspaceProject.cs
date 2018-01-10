@@ -78,13 +78,13 @@ namespace WindViewer.Editor
                 string folderName = new DirectoryInfo(folder).Name;
                 arc.Name = folderName;
 
-                if (folderName.ToLower().StartsWith("stage"))
+                if (folderName.ToLower().StartsWith("stage") || folderName.ToLower().StartsWith("stg"))
                 {
                     Console.WriteLine("Loaded Stage for " + Name);
                     Stage = arc;
                     arc.RoomNumber = -1;
                 }
-                else if(folderName.ToLower().StartsWith("room"))
+                else if(folderName.ToLower().StartsWith("room") || folderName.ToLower().StartsWith("r"))
                 {
                     Console.WriteLine("Loading \"" + folderName + "\" as Room for " + Name);
                     Rooms.Add(arc);
@@ -111,11 +111,9 @@ namespace WindViewer.Editor
                         //I *think* these follow the Rxx_00 pattern, where xx is the room number. _00 can change, xx might be 1 or 3, who knows!
 
                         //We're going to use RegEx here to make sure we only grab what is between R and _00 which could be multipl.e
-                        string[] numbers = Regex.Split(folderName.Substring(0, folderName.Length - 6), @"\D+");
-                        string trimmedNumbers = String.Join("", numbers);
-                        trimmedNumbers = trimmedNumbers.Trim();
+                        
 
-                        roomNumber = int.Parse(trimmedNumbers);
+                        roomNumber = int.Parse(folderName.Substring(1, 2));
                     }
                     else
                     {
@@ -246,6 +244,7 @@ namespace WindViewer.Editor
                             break;
 
                         /* 3D Model Formats */
+                        case "bmdr":
                         case "bmd":
                         case "bdl":
                             file = new JStudioModel();

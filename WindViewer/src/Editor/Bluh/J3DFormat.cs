@@ -310,6 +310,7 @@ namespace WindViewer.FileFormats
                 offset += ChunkSize;
             }
 
+            //TODO rewrite; put this in a map with Types as Keys
             public VertexFormat GetVertexFormat(uint index)
             {
                 VertexFormat vtxFmt = new VertexFormat();
@@ -317,7 +318,7 @@ namespace WindViewer.FileFormats
                 return vtxFmt;
             }
 
-
+            //TODO rewrite; put this in a map with Types as Keys
             public List<VertexFormat> GetAllVertexFormats()
             {
                 var allFormats = new List<VertexFormat>();
@@ -338,16 +339,32 @@ namespace WindViewer.FileFormats
             public Vector3 GetPosition(uint index)
             {
                 Vector3 newPos = new Vector3();
-                for (int i = 0; i < 3; i++)
-                    newPos[i] = FSHelpers.ReadFloat(_dataCopy, (int)(_positionDataOffset + (index * Vector3.SizeInBytes) + (i * 4)));
+                VertexFormat vf = GetVertexFormat(0);
 
+                if (vf.DataType == DataTypes.Float32)
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        newPos[i] = FSHelpers.ReadFloat(_dataCopy, (int)(_positionDataOffset + (index * 4 * 3) + (i * 4)));
+                    }
+                }
+                else if (vf.DataType == DataTypes.Signed16)
+                {
+                    float Scale = (float)Math.Pow(.5f, vf.DecimalPoint);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        newPos[i] = (float)((Int16)FSHelpers.Read16(_dataCopy, (int)(_positionDataOffset + (index * 2 * 3) + (i * 2)))) * Scale;
+                    }
+                }
                 return newPos;
             }
 
             public Vector3 GetNormal(uint index, int decimalPlace)
             {
+                VertexFormat vf = GetVertexFormat(1);
+
                 Vector3 newNormal = new Vector3();
-                float scaleFactor = (float)Math.Pow(0.5, decimalPlace);
+                float scaleFactor = (float)Math.Pow(0.5, vf.DecimalPoint);
 
                 for (int i = 0; i < 3; i++)
                     newNormal[i] = FSHelpers.Read16(_dataCopy,
@@ -365,10 +382,13 @@ namespace WindViewer.FileFormats
                 return newColor;
             }
 
-            public Vector2 GetTex0(int index, int decimalPlace)
+            public Vector2 GetTex0(int index)
             {
+                
+
+
                 Vector2 newTexCoord = new Vector2();
-                float scaleFactor = (float)Math.Pow(0.5, decimalPlace);
+                float scaleFactor = (float)Math.Pow(0.5, GetVertexFormat(3).DecimalPoint);
 
                 for (int i = 0; i < 2; i++)
                     newTexCoord[i] = FSHelpers.Read16(_dataCopy, (int)_tex0DataOffset + (index * 4) + (i * 0x2)) * scaleFactor;

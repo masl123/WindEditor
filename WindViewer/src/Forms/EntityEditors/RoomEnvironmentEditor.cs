@@ -68,7 +68,7 @@ namespace WindViewer.src.Forms.EntityEditors
 
         private void fieldUnknown2_ValueChanged(object sender, EventArgs e)
         {
-            _curChunk.Unknown2 = (byte)fieldUnknown2.Value;
+            _curChunk.Unknown2 = (uint)fieldUnknown2.Value;
         }
     }
 }

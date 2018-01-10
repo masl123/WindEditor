@@ -611,6 +611,7 @@ namespace WindViewer.Editor.WindWaker
                                 {
                                     case J3DFormat.ArrayTypes.Position:
                                         newVertex.Position = _file.Vertexes.GetPosition(curIndex);
+                                       
                                         break;
                                     case J3DFormat.ArrayTypes.Normal:
                                         newVertex.Color = new Vector4(_file.Vertexes.GetNormal(curIndex, 14), 1); //temp
@@ -619,9 +620,11 @@ namespace WindViewer.Editor.WindWaker
                                         newVertex.Color = _file.Vertexes.GetColor0(curIndex);
                                         break;
                                     case J3DFormat.ArrayTypes.Tex0:
-                                        newVertex.TexCoord = _file.Vertexes.GetTex0(curIndex, 8);
+                                        newVertex.TexCoord = _file.Vertexes.GetTex0(curIndex);
                                         break;
-
+                                    case J3DFormat.ArrayTypes.Tex1:
+                                        Console.WriteLine("Tex1 Found!");
+                                        break;
                                     case J3DFormat.ArrayTypes.PositionMatrixIndex:
                                         //Console.WriteLine("B: {0} P: {1} Prim: {2} Vert{3} Index: {4}", i, p, renderPacket.PrimList.Count, vert, curIndex);
                                         primList.PosMatrixIndex.Add(curIndex);
